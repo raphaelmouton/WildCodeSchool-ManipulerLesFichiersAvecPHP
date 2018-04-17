@@ -2,6 +2,7 @@
 ?>
 
 <p>Vous trouverez ici la liste des repertoires et fichiers.</p>
+
 <?php
 function mkmap($dir)
 {
@@ -11,14 +12,14 @@ function mkmap($dir)
         if ($file != "." && $file != "..") {
             $pathfile = $dir . '/' . $file;
             $image = new SplFileInfo($file);
-            if($image->getExtension() == 'jpg') {
-                echo '<li><a href ="' . $pathfile . '">' . $file . ' </a></li>';
+            if ($image->getExtension() == 'jpg') {
+                echo '<li><a  target="_blank" href ="' . $pathfile . '">' . $file . '</a></li>';
             }
-            if($image->getExtension() != 'jpg') {
-                echo '<li><a href ="?f=' . $pathfile . '">' . $file . ' </a></li>';
+            if ($image->getExtension() != 'jpg') {
+                echo '<li><a href ="?f=' . $pathfile . '">' . $file . '</a></li>';
 
             }
-                if (filetype($pathfile) == 'dir') {
+            if (filetype($pathfile) == 'dir') {
                 mkmap($pathfile);
 
             }
@@ -52,6 +53,19 @@ if (isset ($_GET["f"])) {
     if (isset($_POST["delete"]) && isset($_GET["f"])) {
         $fichier = $_GET["f"];
         unlink($fichier);
+        echo 'Message effacé ! Retourne sur l\'index pour voir !';
+    }
+
+    if (isset($_POST["deletedir"])) {
+        $dossier = "$fichier";
+        $dir_iterator = new RecursiveDirectoryIterator($dossier);
+        $iterator = new RecursiveIteratorIterator($dir_iterator, RecursiveIteratorIterator::CHILD_FIRST);
+
+        foreach ($iterator as $fichier) {
+            $fichier->isDir() ? rmdir($fichier) : unlink($fichier);
+        }
+
+        rmdir($dossier);
 
         header('Location:index.php');
     }
@@ -62,7 +76,11 @@ if (isset ($_GET["f"])) {
         ?>
         <form method="POST" action="">
             <input type="hidden" name="delete" value="<?= $_GET["f"] ?>"/>
-            <input type="submit" value="Supprimer un fichier"/>
+            <input type="submit" value="Supprimer le fichier"/>
+        </form>
+        <form method="POST" action="">
+            <input type="hidden" name="deletedir" value="<?= $_GET["f"] ?>"/>
+            <input type="submit" value="Supprimer le dossier"/>
         </form>
         <?php
     }

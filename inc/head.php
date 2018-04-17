@@ -10,7 +10,7 @@
 <nav class="navbar navbar-default">
     <div class="container">
         <div class="navbar-header">
-            <a class="navbar-brand" href="#">
+            <a class="navbar-brand" href="index.php">
                 <h1><strong>FBI:</strong> X-files archives</h1>
             </a>
             <h2></h2>
