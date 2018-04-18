@@ -12,13 +12,20 @@ function mkmap($dir)
         if ($file != "." && $file != "..") {
             $pathfile = $dir . '/' . $file;
             $image = new SplFileInfo($file);
-            if ($image->getExtension() == 'jpg') {
+            $fichierMod = ['txt', 'html'];
+            $imageMod = ['jpg', 'png'];
+            $folderMod = [''];
+            if ($image->getExtension() == (in_array($image, $folderMod))) {
+                echo '<li><a href ="?cont=' . $pathfile . '">' . $file . '</a></li>';
+            }
+            if ($image->getExtension() == ('jpg')) {
                 echo '<li><a  target="_blank" href ="' . $pathfile . '">' . $file . '</a></li>';
             }
-            if ($image->getExtension() != 'jpg') {
+            if ($image->getExtension() == (!in_array($image, $fichierMod))) {
                 echo '<li><a href ="?f=' . $pathfile . '">' . $file . '</a></li>';
-
             }
+
+
             if (filetype($pathfile) == 'dir') {
                 mkmap($pathfile);
 
@@ -56,19 +63,6 @@ if (isset ($_GET["f"])) {
         echo 'Message effacé ! Retourne sur l\'index pour voir !';
     }
 
-    if (isset($_POST["deletedir"])) {
-        $dossier = "$fichier";
-        $dir_iterator = new RecursiveDirectoryIterator($dossier);
-        $iterator = new RecursiveIteratorIterator($dir_iterator, RecursiveIteratorIterator::CHILD_FIRST);
-
-        foreach ($iterator as $fichier) {
-            $fichier->isDir() ? rmdir($fichier) : unlink($fichier);
-        }
-
-        rmdir($dossier);
-
-        header('Location:index.php');
-    }
 
     if (isset ($_GET["f"])) {
 
@@ -78,13 +72,29 @@ if (isset ($_GET["f"])) {
             <input type="hidden" name="delete" value="<?= $_GET["f"] ?>"/>
             <input type="submit" value="Supprimer le fichier"/>
         </form>
-        <form method="POST" action="">
-            <input type="hidden" name="deletedir" value="<?= $_GET["f"] ?>"/>
-            <input type="submit" value="Supprimer le dossier"/>
-        </form>
         <?php
     }
 }
-?>
+if (isset ($_GET["cont"]) && isset($_POST["deletedir"])) {
+    $dossier = $_GET["cont"];
+    $dir_iterator = new RecursiveDirectoryIterator($dossier);
+    $iterator = new RecursiveIteratorIterator($dir_iterator, RecursiveIteratorIterator::CHILD_FIRST);
 
-<?php include('inc/foot.php'); ?>
+    foreach ($iterator as $fichier) {
+        $fichier->isDir() ? rmdir($fichier) : unlink($fichier);
+    }
+
+    rmdir($dossier);
+
+    header('Location:index.php');
+}
+if (isset ($_GET["cont"])) {
+
+    ?>
+    <form method="POST" action="">
+        <input type="hidden" name="deletedir" value="<?= $_GET["cont"] ?>"/>
+        <input type="submit" value="Supprimer le dossier"/>
+    </form>
+    <?php
+}
+include('inc/foot.php'); ?>
