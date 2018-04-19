@@ -12,8 +12,6 @@ function mkmap($dir)
         if ($file != "." && $file != "..") {
             $pathfile = $dir . '/' . $file;
             $image = new SplFileInfo($file);
-            $fichierMod = ['txt', 'html'];
-            $imageMod = ['jpg', 'png'];
             $folderMod = [''];
             if ($image->getExtension() == (in_array($image, $folderMod))) {
                 echo '<li><a href ="?cont=' . $pathfile . '">' . $file . '</a></li>';
@@ -21,10 +19,12 @@ function mkmap($dir)
             if ($image->getExtension() == ('jpg')) {
                 echo '<li><a  target="_blank" href ="' . $pathfile . '">' . $file . '</a></li>';
             }
-            if ($image->getExtension() == (!in_array($image, $fichierMod))) {
+            if ($image->getExtension() == ("txt")) {
                 echo '<li><a href ="?f=' . $pathfile . '">' . $file . '</a></li>';
             }
-
+            if ($image->getExtension() == ("html")) {
+                echo '<li><a href ="?f=' . $pathfile . '">' . $file . '</a></li>';
+            }
 
             if (filetype($pathfile) == 'dir') {
                 mkmap($pathfile);
@@ -75,18 +75,18 @@ if (isset ($_GET["f"])) {
         <?php
     }
 }
+
+
 if (isset ($_GET["cont"]) && isset($_POST["deletedir"])) {
     $dossier = $_GET["cont"];
     $dir_iterator = new RecursiveDirectoryIterator($dossier);
     $iterator = new RecursiveIteratorIterator($dir_iterator, RecursiveIteratorIterator::CHILD_FIRST);
-
     foreach ($iterator as $fichier) {
         $fichier->isDir() ? rmdir($fichier) : unlink($fichier);
+        header('location:index.php');
     }
-
     rmdir($dossier);
 
-    header('Location:index.php');
 }
 if (isset ($_GET["cont"])) {
 
